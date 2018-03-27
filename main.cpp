@@ -16,9 +16,20 @@ volatile int trigger = 0;
 volatile int rate2 = -20;
 volatile bool refresh = false;
 
+
+volatile bool refreshADSR = false;
+volatile int adsr_attack = 0;
+volatile int adsr_decay = 1;
+volatile float adsr_sustain = 1;
+volatile int adsr_release = 1000;
+
 static void *userInput_thread(void *) {
     MessageQueue queue = MessageQueue(10);
+    bool doBreak = false;
     while (true) {
+        if (doBreak) {
+            break;
+        }
         Event e = queue.receive();
         switch (e.getType()) {
             case EventType::ADC_VALUES:
@@ -42,15 +53,33 @@ static void *userInput_thread(void *) {
                 }
                 refresh = true;
                 break;
+            case EventType::ADSR:
+                adsr_attack = e.getInt(0);
+                adsr_decay = e.getInt(1);
+                adsr_sustain = e.getFloat(2);
+                adsr_release = e.getInt(3);
+                refreshADSR = true;
+                break;
         }
     }
 }
 
-void setup() {//some inits
+int queueID = 10;
+int receipent = 1;
+std::string fileName = "";
 
-    beats.load(
-            "/Users/torbenhartmann/Downloads/audiocheck.net_sin_1000Hz_-3dBFS_3s (1).wav");//load in your samples. Provide the full path to a wav file.
-    //printf("Summary:\n%s", beats.getSummary());//get info on samples if you like.
+void setup(std::vector<std::string> arguments) {//some inits
+    if (arguments.size() != 3) {
+        std::cout << "Please start the Process with: queueID receipentID waveLocation" << std::endl;
+        exit(1);
+    }
+
+
+    queueID = std::stoi(arguments[0]);
+    receipent = std::stoi(arguments[1]);
+    fileName = arguments[2];
+
+    beats.load(fileName);
 
     float max = 1 << 16;
 
@@ -80,7 +109,6 @@ float pitch = b / base;
 
 
 void play(double *output) {//this is where the magic happens. Very slow magic.
-    double myCurrentVolume = myEnvelope.adsr(1., myEnvelope.trigger);
     //i++;
     if (refresh) {
         refresh = false;
@@ -88,8 +116,22 @@ void play(double *output) {//this is where the magic happens. Very slow magic.
         b = 440 * std::pow(2.0, (n + rate - 49) / 12.0);
         pitch = b / base;
         myEnvelope.trigger = trigger;
-        //std::cout << b << std::endl;
     }
-    output[0] = shift->play(pitch, 1, 0.4, 2, 0.0);
+    if (refreshADSR) {
+        myEnvelope.setAttack(adsr_attack);
+        myEnvelope.setDecay(adsr_decay);  // Needs to be at least 1
+        myEnvelope.setSustain(adsr_sustain);
+        myEnvelope.setRelease(adsr_release);
+        refreshADSR = false;
+    }
+
+    double myCurrentVolume = myEnvelope.adsr(1., myEnvelope.trigger);
+
+    if (myCurrentVolume > 0) {
+        output[0] = shift->play(pitch, 1, 0.4, 2, 0.0) * myCurrentVolume;
+    } else {
+        output[0] = 0;
+    }
+
     output[1] = output[0];
 }

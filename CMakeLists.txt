@@ -14,7 +14,6 @@ file(GLOB MAXIMILIAN
 )
 
 
-add_definitions(-D__MACOSX_CORE__)
 
 set(SOURCE_FILES main.cpp ${MAXIMILIAN})
 add_executable(BeagleAudio ${SOURCE_FILES})
@@ -56,7 +55,18 @@ target_link_libraries(BeagleAudio PUBLIC ${Poco_Util_LIBRARY})
 target_link_libraries(BeagleAudio PUBLIC ${Poco_JSON_LIBRARY})
 target_link_libraries(BeagleAudio PUBLIC ${EventQueue_LIBRARY})
 
+if(APPLE)
+    ADD_OSX_FRAMEWORK(CoreFoundation BeagleAudio)
+    ADD_OSX_FRAMEWORK(CoreAudio BeagleAudio)
+    ADD_OSX_FRAMEWORK(Accelerate BeagleAudio)
+    add_definitions(-D__MACOSX_CORE__)
 
-ADD_OSX_FRAMEWORK(CoreFoundation BeagleAudio)
-ADD_OSX_FRAMEWORK(CoreAudio BeagleAudio)
-ADD_OSX_FRAMEWORK(Accelerate BeagleAudio)
+else()
+    add_definitions(-D__LINUX_ALSA__)
+    find_package (Threads)
+    target_link_libraries (BeagleAudio ${CMAKE_THREAD_LIBS_INIT})
+    find_package(ALSA REQUIRED)
+    include_directories(${ALSA_INCLUDE_DIRS})
+    target_link_libraries (BeagleAudio ${ALSA_LIBRARIES})
+    #-lasound -lpthread
+endif()
