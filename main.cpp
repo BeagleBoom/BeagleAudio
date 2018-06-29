@@ -4,6 +4,7 @@
 #include <EventQueue/MessageQueue.h>
 #include <EventQueue/EventType.h>
 #include <memory>
+
 maxiOsc mySine, myPhasor; // This is the oscillator we will use to generate the test tone
 float data[256];
 int _index = 0;
@@ -111,6 +112,7 @@ float pitch = b / base;
 void play(double *output) {//this is where the magic happens. Very slow magic.
     //i++;
     if (refresh) {
+        std::cout << "REFRESH" << std::endl;
         refresh = false;
         rate += 1;
         b = 440 * std::pow(2.0, (n + rate - 49) / 12.0);
