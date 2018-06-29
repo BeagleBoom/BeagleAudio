@@ -23,9 +23,10 @@ volatile int adsr_attack = 0;
 volatile int adsr_decay = 1;
 volatile float adsr_sustain = 1;
 volatile int adsr_release = 1000;
+int receipent = 1;
 
 static void *userInput_thread(void *) {
-    MessageQueue queue = MessageQueue(10);
+    MessageQueue queue = MessageQueue(receipent);
     bool doBreak = false;
     while (true) {
         std::cout << "LOOP" << std::endl;
@@ -68,20 +69,17 @@ static void *userInput_thread(void *) {
     }
 }
 
-int queueID = 10;
-int receipent = 1;
 std::string fileName = "";
 
 void setup(std::vector<std::string> arguments) {//some inits
-    if (arguments.size() != 3) {
-        std::cout << "Please start the Process with: queueID receipentID waveLocation" << std::endl;
+    if (arguments.size() != 2) {
+        std::cout << "Please start the Process with: receipentID waveLocation" << std::endl;
         exit(1);
     }
 
 
-    queueID = std::stoi(arguments[0]);
-    receipent = std::stoi(arguments[1]);
-    fileName = arguments[2];
+    receipent = std::stoi(arguments[0]);
+    fileName = arguments[1];
 
     beats.load(fileName);
 
