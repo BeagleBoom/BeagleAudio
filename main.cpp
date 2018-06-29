@@ -104,7 +104,7 @@ void setup(std::vector<std::string> arguments) {//some inits
 }
 
 float base = 1000;
-int baseNote = 81;//A5
+int baseNote = 12;//A5
 int n = std::floor(49 + 12 * std::log2(base / 440));
 float b = 440 * std::pow(2.0, (n + rate - 49) / 12.0);
 float pitch = b / base;
@@ -115,8 +115,8 @@ void play(double *output) {//this is where the magic happens. Very slow magic.
     if (refresh) {
         std::cout << "REFRESH" << std::endl;
         refresh = false;
-        rate += 1;
-        b = 440 * std::pow(2.0, (n + rate - 49) / 12.0);
+        //rate += 1;
+        b = 440 * std::pow(2.0, (rate - 49) / 12.0);
         pitch = b / base;
         myEnvelope.trigger = trigger;
     }
