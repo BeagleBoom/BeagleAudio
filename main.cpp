@@ -3,7 +3,7 @@
 #include <cmath>
 #include <EventQueue/MessageQueue.h>
 #include <EventQueue/EventType.h>
-
+#include <memory>
 maxiOsc mySine, myPhasor; // This is the oscillator we will use to generate the test tone
 float data[256];
 int _index = 0;
