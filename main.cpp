@@ -28,10 +28,13 @@ static void *userInput_thread(void *) {
     MessageQueue queue = MessageQueue(10);
     bool doBreak = false;
     while (true) {
+        std::cout << "LOOP" << std::endl;
         if (doBreak) {
             break;
         }
+        std::cout << "WAIT" << std::endl;
         Event e = queue.receive();
+        std::cout << "EVENT " << e.getPayloadCount() << std::endl;
         switch (e.getType()) {
             case EventType::ADC_VALUES:
                 for (unsigned int i = 1; i < e.getPayloadCount(); i += 2) {
