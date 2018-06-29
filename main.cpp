@@ -38,7 +38,7 @@ static void *userInput_thread(void *) {
         //std::cout << "EVENT " << e.getPayloadCount() << std::endl;
         switch (e.getType()) {
             case EventType::ADC_VALUES:
-                for (unsigned int i = 1; i < e.getPayloadCount(); i += 2) {
+                for (unsigned int i = 0; i < e.getPayloadCount(); i += 2) {
                     int channel = e.getInt(i);
                     int value = e.getInt(i + 1);
                     switch (channel) {
