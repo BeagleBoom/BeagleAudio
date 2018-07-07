@@ -85,12 +85,12 @@ void setup(std::vector<std::string> arguments) {//some inits
 
     float max = 1 << 16;
 
-    std::cout << max << std::endl;
-
+    std::cout << "##WAVE_START##" << std::endl;
     for (int i = 0; i < beats.myDataSize / 8; i++) {
         std::cout << (beats.temp[i] / max) << " ";
     }
 
+    std::cout << "##WAVE_END##" << std::endl;
     shift = std::make_shared<maxiTimePitchStretch<hannWinFunctor, maxiSample>>(&beats);
     std::cout << std::endl << beats.myBitsPerSample;
 
