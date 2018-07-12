@@ -45,13 +45,13 @@ static void *userInput_thread(void *) {
                         case 2://CV 1
                             rate = value;
                             break;
-                        case 6://Gain 1
+                        case 6://Gate 1
                             trigger = value;
                             break;
                         case 3://CV 2
                             //rate2 = value;
                             break;
-                        case 7://Gain 2
+                        case 7://Gate 2
 
                             break;
                     }
